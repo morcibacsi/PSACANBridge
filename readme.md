@@ -54,7 +54,7 @@ I used the software in my car for months, without any sign of errors. However I 
 
 ### Functionality
 
- - Different VIN code support for the head unit (in case you can' modify it in the unit)
+ - Different VIN code support for the head unit (in case you can't modify it in the unit)
  - Show door status message when it isn't supported by default (like in the 5008)
  - Web page to setup the board
  - OTA support
