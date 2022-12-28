@@ -40,9 +40,9 @@ The components needed for the project to work in your car depends on what you wa
 
 Regarding the cables for the headunit I recommend to search on Aliexpress or similar sites for "Peugeot RCC NAC MRN adapter cable". You can buy everything in one package, save yourself the hussle to hunt down everything one by one. The connectors are proprietary and building the patch lead would be a pain. Because of this I won't provide a pinout for these.
 
-![components](https://github.com/morcibacsi/PSACanBridge/raw/master/images/components.jpg)
+![components](https://github.com/morcibacsi/PSACanBridge/raw/main/images/components.jpg)
 
-You still need to build one cable anyways: I built a conversion cable which contains the JST XH6 connector for the bridge hardware the MATT connector adapter and a quadlock connector (see the [Installation](###Installation) section).
+You still need to build one cable anyways: a conversion cable which contains the JST XH6 connector for the bridge hardware the MATT connector adapter and a quadlock connector (see the [Installation](###Installation) section).
 
 ### PSA CAN protocol bridge hardware
 
@@ -80,9 +80,9 @@ Below you can see the schematics of a patch lead which has the 6 pin connector o
 
 Take note that I left out the quadlock socket (only the plug is there) as it has straight wires, except the CAN wires, which I drawn. For this I just bought a quadlock extension cable and removed the CAN wires.
 
-![matt_quadlock_bridge](https://github.com/morcibacsi/PSACanBridge/raw/master/images/matt_quadlock_bridge.png)
+![matt_quadlock_bridge](https://github.com/morcibacsi/PSACANBridge/raw/main/images/matt_quadlock_bridge.png)
 
-![matt_quadlock_bridge_patch_lead](https://github.com/morcibacsi/PSACanBridge/raw/master/images/matt_quadlock_bridge_patch.jpg)
+![matt_quadlock_bridge_patch_lead](https://github.com/morcibacsi/PSACANBridge/raw/main/images/matt_quadlock_bridge_patch.jpg)
 
 ### Project structure
 
