@@ -42,7 +42,7 @@ Regarding the cables for the headunit I recommend to search on Aliexpress or sim
 
 ![components](https://github.com/morcibacsi/PSACanBridge/raw/main/images/components.jpg)
 
-You still need to build one cable anyways: a conversion cable which contains the JST XH6 connector for the bridge hardware the MATT connector adapter and a quadlock connector (see the [Installation](###Installation) section).
+You still need to build one cable anyways: a conversion cable which contains the JST XH6 connector for the bridge hardware the MATT connector adapter and a quadlock connector (see the [Installation](#Installation) section).
 
 ### PSA CAN protocol bridge hardware
 
