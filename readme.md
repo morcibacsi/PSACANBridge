@@ -99,7 +99,7 @@ These are just the basics to get started, if you are interested further then hea
 
 ### Configuration page
 
-The software contains an access point named PSACANBridge. If you connect to it it will present a captive portal (or you can point your browser to http://192.168.100.1). You can set some aspects of the software. The content of the webpage can be found in the Helpers\WWWData.h file (as a gzipped byte array). It is written in Preact using TypeScript. The source code can be found in [this repository][psacanbridgecontrol].
+The software contains an access point named PSACANBridge. If you connect to it it will present a captive portal (or you can point your browser to http://192.168.100.1). You can set some aspects of the software. The content of the webpage can be found in the Helpers\WWWData.h file (as a gzipped byte array). It is written in Preact using TypeScript. The source code can be found in [this repository][psacanbridgesetup].
 
 ### Building the project
 
@@ -114,4 +114,4 @@ In theory it is possible to compile the project from the Arduino IDE as well, bu
 The list of the used libraries can be found in the platformio.ini file under the **lib_deps** node.
 
 [psacanbridgehw]: https://github.com/morcibacsi/PSACanBridgeHW
-[psacanbridgecontrol]: https://github.com/morcibacsi/PSACanBridgeControl
+[psacanbridgesetup]: https://github.com/morcibacsi/PSACanBridgeSetup
