@@ -242,6 +242,8 @@ void InitSerialPort()
 
     serialPort->begin(500000);
     serialPort->println(bluetoothDeviceName);
+    serialPort->print("ESP version:");
+    serialPort->println(esp_get_idf_version());
 }
 
 void Init2004()

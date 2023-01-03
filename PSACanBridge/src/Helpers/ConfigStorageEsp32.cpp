@@ -48,7 +48,7 @@ bool ConfigStorageEsp32::Load()
 {
     // Use the tool here: https://arduinojson.org/v6/assistant/
     debug_println(F("try to load config"));
-    bool beginSuccess = SPIFFS.begin(false);
+    bool beginSuccess = SPIFFS.begin(true);
     if (beginSuccess)
     {
         if (SPIFFS.exists(_fileName))

@@ -16,12 +16,12 @@ const char *hosturl = "http://192.168.100.1";
 
 void WiFiEvent(WiFiEvent_t event)
 {
-    if (event == SYSTEM_EVENT_STA_START || event == SYSTEM_EVENT_AP_START)
+    if (event == ARDUINO_EVENT_WIFI_STA_START || event == ARDUINO_EVENT_WIFI_AP_START)
     {
         _wifiStarted = true;
     }
 
-    if (event == SYSTEM_EVENT_STA_GOT_IP || event == SYSTEM_EVENT_ETH_GOT_IP)
+    if (event == ARDUINO_EVENT_WIFI_STA_GOT_IP || event == ARDUINO_EVENT_ETH_GOT_IP)
     {
         _serialPort->print("Obtained IP address: ");
         _serialPort->println(WiFi.localIP());
@@ -33,83 +33,83 @@ void WiFiEvent(WiFiEvent_t event)
     debug_println(event);
 
     switch (event) {
-        case SYSTEM_EVENT_WIFI_READY:
+        case ARDUINO_EVENT_WIFI_READY:
             debug_println("WiFi interface ready");
             break;
-        case SYSTEM_EVENT_SCAN_DONE:
+        case ARDUINO_EVENT_WIFI_SCAN_DONE:
             debug_println("Completed scan for access points");
             break;
-        case SYSTEM_EVENT_STA_START:
+        case ARDUINO_EVENT_WIFI_STA_START:
             debug_println("WiFi client started");
             break;
-        case SYSTEM_EVENT_STA_STOP:
+        case ARDUINO_EVENT_WIFI_STA_STOP:
             debug_println("WiFi clients stopped");
             break;
-        case SYSTEM_EVENT_STA_CONNECTED:
+        case ARDUINO_EVENT_WIFI_STA_CONNECTED:
             debug_println("Connected to access point");
             break;
-        case SYSTEM_EVENT_STA_DISCONNECTED:
+        case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
             debug_println("Disconnected from WiFi access point");
             break;
-        case SYSTEM_EVENT_STA_AUTHMODE_CHANGE:
+        case ARDUINO_EVENT_WIFI_STA_AUTHMODE_CHANGE:
             debug_println("Authentication mode of access point has changed");
             break;
-        case SYSTEM_EVENT_STA_GOT_IP:
+        case ARDUINO_EVENT_WIFI_STA_GOT_IP:
             debug_print("Obtained IP address: ");
             debug_println(WiFi.localIP());
             break;
-        case SYSTEM_EVENT_STA_LOST_IP:
+        case ARDUINO_EVENT_WIFI_STA_LOST_IP:
             debug_println("Lost IP address and IP address is reset to 0");
             break;
-        case SYSTEM_EVENT_STA_WPS_ER_SUCCESS:
+        case ARDUINO_EVENT_WPS_ER_SUCCESS:
             debug_println("WiFi Protected Setup (WPS): succeeded in enrollee mode");
             break;
-        case SYSTEM_EVENT_STA_WPS_ER_FAILED:
+        case ARDUINO_EVENT_WPS_ER_FAILED:
             debug_println("WiFi Protected Setup (WPS): failed in enrollee mode");
             break;
-        case SYSTEM_EVENT_STA_WPS_ER_TIMEOUT:
+        case ARDUINO_EVENT_WPS_ER_TIMEOUT:
             debug_println("WiFi Protected Setup (WPS): timeout in enrollee mode");
             break;
-        case SYSTEM_EVENT_STA_WPS_ER_PIN:
+        case ARDUINO_EVENT_WPS_ER_PIN:
             debug_println("WiFi Protected Setup (WPS): pin code in enrollee mode");
             break;
-        case SYSTEM_EVENT_STA_WPS_ER_PBC_OVERLAP:
+        case ARDUINO_EVENT_WPS_ER_PBC_OVERLAP:
             debug_println("ESP32 station wps overlap in enrollee mode");
             break;
-        case SYSTEM_EVENT_AP_START:
+        case ARDUINO_EVENT_WIFI_AP_START:
             debug_println("WiFi access point started");
             break;
-        case SYSTEM_EVENT_AP_STOP:
+        case ARDUINO_EVENT_WIFI_AP_STOP:
             debug_println("WiFi access point  stopped");
             break;
-        case SYSTEM_EVENT_AP_STACONNECTED:
+        case ARDUINO_EVENT_WIFI_AP_STACONNECTED:
             debug_println("Client connected");
             break;
-        case SYSTEM_EVENT_AP_STADISCONNECTED:
+        case ARDUINO_EVENT_WIFI_AP_STADISCONNECTED:
             debug_println("Client disconnected");
             break;
-        case SYSTEM_EVENT_AP_STAIPASSIGNED:
+        case ARDUINO_EVENT_WIFI_AP_STAIPASSIGNED:
             debug_println("Assigned IP address to client");
             break;
-        case SYSTEM_EVENT_AP_PROBEREQRECVED:
+        case ARDUINO_EVENT_WIFI_AP_PROBEREQRECVED:
             debug_println("Received probe request");
             break;
-        case SYSTEM_EVENT_GOT_IP6:
+        case ARDUINO_EVENT_WIFI_AP_GOT_IP6:
             debug_println("AP IPv6 is preferred");
             break;
-        case SYSTEM_EVENT_ETH_START:
+        case ARDUINO_EVENT_ETH_START:
             debug_println("Ethernet started");
             break;
-        case SYSTEM_EVENT_ETH_STOP:
+        case ARDUINO_EVENT_ETH_STOP:
             debug_println("Ethernet stopped");
             break;
-        case SYSTEM_EVENT_ETH_CONNECTED:
+        case ARDUINO_EVENT_ETH_CONNECTED:
             debug_println("Ethernet connected");
             break;
-        case SYSTEM_EVENT_ETH_DISCONNECTED:
+        case ARDUINO_EVENT_ETH_DISCONNECTED:
             debug_println("Ethernet disconnected");
             break;
-        case SYSTEM_EVENT_ETH_GOT_IP:
+        case ARDUINO_EVENT_ETH_GOT_IP:
             debug_println("Obtained IP address");
             break;
         default: break;
