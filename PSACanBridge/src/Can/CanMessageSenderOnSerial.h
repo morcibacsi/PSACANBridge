@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #ifndef _CanMessageSenderOnSerial_h
     #define _CanMessageSenderOnSerial_h

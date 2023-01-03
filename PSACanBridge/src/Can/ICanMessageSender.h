@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 
 #ifndef _ICanMessageSender_h
     #define _ICanMessageSender_h

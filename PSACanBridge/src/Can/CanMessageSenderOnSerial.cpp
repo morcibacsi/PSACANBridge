@@ -1,4 +1,4 @@
-﻿#include "CanMessageSenderOnSerial.h"
+#include "CanMessageSenderOnSerial.h"
 
 void CanMessageSenderOnSerial::PrintToSerial(uint16_t canId, uint8_t ext, uint8_t sizeOfByteArray, uint8_t *byteArray)
 {
