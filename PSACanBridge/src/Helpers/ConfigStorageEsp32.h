@@ -13,7 +13,7 @@ class ConfigStorageEsp32 : public IConfigStorage
     #define JSON_MEMORY_SIZE 3072
 
     Config* _config;
-    const char* _fileName = "/config";
+    const char* _fileName = "/canconfig";
     StaticJsonDocument<JSON_MEMORY_SIZE> _configJson;
 
     public:
