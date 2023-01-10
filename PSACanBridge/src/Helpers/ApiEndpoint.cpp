@@ -110,6 +110,8 @@ void handleDateTimePostEvent(AsyncWebServerRequest* request)
     Serial.println(secondParam->value());
 */
 
+    _timeProvider->Start();
+
     _timeProvider->SetDateTime(
         yearParam->value().toInt(),
         monthParam->value().toInt(),

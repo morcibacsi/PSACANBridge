@@ -22,7 +22,7 @@ public:
     TimeProvider(uint8_t sdaPin, uint8_t sclPin, DataBroker *dataBroker, Config *config);
 
     void Start();
-    void Process(unsigned long currentTime);
+    bool Process(unsigned long currentTime);
     void SetDateTime(uint16_t year,  uint8_t month, uint8_t day, uint8_t hour, uint8_t minute, uint8_t second);
 };
 

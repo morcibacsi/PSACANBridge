@@ -26,20 +26,23 @@ void TimeProvider::Start()
     _started = true;
 }
 
-void TimeProvider::Process(unsigned long currentTime)
+bool TimeProvider::Process(unsigned long currentTime)
 {
     if (!_config->HAS_RTC)
     {
-        return;
+        return false;
     }
 
-    uint8_t mday;
     uint8_t wday;
-    if (currentTime - _previousTime > 1000)
+    if (currentTime - _previousTime >= 1000)
     {
         _previousTime = currentTime;
-        _rtc.getDateTime(&_dataBroker->Hour, &_dataBroker->Minute, &_dataBroker->Second, &mday, &_dataBroker->Month, &_dataBroker->Year, &wday);
+        _rtc.getDateTime(&_dataBroker->Hour, &_dataBroker->Minute, &_dataBroker->Second, &_dataBroker->MDay, &_dataBroker->Month, &_dataBroker->Year, &wday);
+
+        return true;
     }
+
+    return false;
 }
 
 void TimeProvider::SetDateTime(uint16_t year,  uint8_t month, uint8_t day, uint8_t hour, uint8_t minute, uint8_t second)

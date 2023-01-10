@@ -188,7 +188,11 @@ void CAN2010WriteTaskFunction(void * parameter)
     {
         currentTime = millis();
 
-        timeProvider->Process(currentTime);
+        if (timeProvider->Process(currentTime))
+        {
+            canMessageHandlerContainer2010->SetData(0x276);
+        }
+
         canMessageHandlerContainer2010->SendDueMessages(currentTime);
         canDataConverter->SendCanMessage(currentTime);
 
@@ -267,14 +271,12 @@ void Init2010()
 
 void setup()
 {
-    constexpr uint8_t SDA_PIN = 25;
-    constexpr uint8_t SCL_PIN = 5;
+    constexpr uint8_t SDA_PIN = 16;//RX2 - 16
+    constexpr uint8_t SCL_PIN = 17;//TX2 - 17
 
     deviceInfo = new GetDeviceInfoEsp32();
     dataBroker = new DataBroker();
     config = new Config();
-    timeProvider = new TimeProvider(SDA_PIN, SCL_PIN, dataBroker, config);
-    timeProvider->Start();
 
     InitSerialPort();
 
@@ -283,6 +285,9 @@ void setup()
 
     configStorage = new ConfigStorageEsp32(config);
     configStorage->Load();
+
+    timeProvider = new TimeProvider(SDA_PIN, SCL_PIN, dataBroker, config);
+    timeProvider->Start();
 
     canMessageHandlerContainer2010 = new CanMessageHandlerContainer2010(can2010Interface, config, dataBroker);
 

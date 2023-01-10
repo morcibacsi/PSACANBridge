@@ -47,8 +47,8 @@ union CAN_276_2010_Byte4Struct{
 
 union CAN_276_2010_Byte5Struct{
     struct {
-        uint8_t minute : 5; // bit 0-5
-        uint8_t        : 3; // bit 6-7
+        uint8_t minute : 6; // bit 0-5
+        uint8_t        : 2; // bit 6-7
     } data;
     uint8_t asByte;
 };
