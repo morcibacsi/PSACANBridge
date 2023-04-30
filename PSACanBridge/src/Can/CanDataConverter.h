@@ -19,6 +19,7 @@ class CanDataConverter {
     UInt24 _mileage;
 
     uint8_t can2004Data[8];
+    uint8_t _msgLength;
 
     Config *_config;
     DataBroker *_dataBroker;
@@ -52,5 +53,6 @@ class CanDataConverter {
     void Handle_221();
     void Handle_220();
     void Handle_1A1();
+    void Handle_21F();
 };
 #endif

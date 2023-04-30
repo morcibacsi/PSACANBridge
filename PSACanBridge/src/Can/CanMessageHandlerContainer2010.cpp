@@ -13,6 +13,7 @@
 #include "Handlers/MessageHandler_161.h"
 #include "Handlers/MessageHandler_168.h"
 #include "Handlers/MessageHandler_217.h"
+#include "Handlers/MessageHandler_21F.h"
 #include "Handlers/MessageHandler_221.h"
 #include "Handlers/MessageHandler_227.h"
 #include "Handlers/MessageHandler_228.h"
@@ -38,6 +39,7 @@ CanMessageHandlerContainer2010::CanMessageHandlerContainer2010(ICanMessageSender
     _handlers.push_back(new MessageHandler_161(canInterface, dataBroker, config));
     _handlers.push_back(new MessageHandler_168(canInterface, dataBroker));
     _handlers.push_back(new MessageHandler_217(canInterface, dataBroker));
+    _handlers.push_back(new MessageHandler_21F(canInterface, dataBroker, config));
     //_handlers.push_back(new MessageHandler_221(canInterface, dataBroker));
     _handlers.push_back(new MessageHandler_227(canInterface, dataBroker));
     _handlers.push_back(new MessageHandler_228(canInterface, dataBroker));

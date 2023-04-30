@@ -48,6 +48,7 @@ CanDataConverter::CanDataConverter(
 void IRAM_ATTR CanDataConverter::ProcessMessage2004(unsigned long currentTime, uint16_t canId, uint8_t canMessage[8], uint8_t msgLength)
 {
     _currentTime = currentTime;
+    _msgLength = msgLength;
 
     //make a copy of the buffer
     memcpy(can2004Data, canMessage, msgLength);
@@ -91,6 +92,9 @@ void IRAM_ATTR CanDataConverter::ProcessMessage2004(unsigned long currentTime, u
             break;
         case 0x127:
             Handle_127();
+            break;
+        case 0x21F:
+            Handle_21F();
             break;
         default:
             break;
@@ -460,4 +464,17 @@ void IRAM_ATTR CanDataConverter::Handle_127()
     _dataBroker->EnableVTH = tmp.Status.data.enable_vth;
 
     _canMessageHandlerContainer2010->SetData(0x168);
+}
+
+void IRAM_ATTR CanDataConverter::Handle_21F()
+{
+    _dataBroker->RemoteCommand1 = can2004Data[0];
+    _dataBroker->RemoteScrollPosition = can2004Data[1];
+
+    if (_msgLength > 2)
+    {
+        _dataBroker->RemoteCommand3 = can2004Data[2];
+    }
+
+    _canMessageHandlerContainer2010->SetData(0x21F);
 }

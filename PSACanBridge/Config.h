@@ -43,6 +43,7 @@ struct Config
     bool HAS_RTC                        = false;
     bool ORIGINAL_DISPLAY_PRESENT       = false;
     bool GENERATE_POPUP_FOR_DOOR_STATUS = false;
+    bool REPLACE_REMOTE_MODE_BTN_WITH_SRC = false;
 
     // if true then the ignition signal is used from the CAN bus otherwise the ignition is considered as always on
     bool USE_IGNITION_SIGNAL_FROM_CAN_BUS = true;

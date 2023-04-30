@@ -203,6 +203,10 @@ class DataBroker
         uint8_t S_1A1Byte6;
         uint8_t S_1A1Byte7;
         uint8_t S_1A1Byte8;
+        //21F
+        uint8_t RemoteCommand1;
+        uint8_t RemoteScrollPosition;
+        uint8_t RemoteCommand3;
         //Door
         uint8_t DoorStatusByte;
         uint8_t IsFrontLeftDoorOpen;

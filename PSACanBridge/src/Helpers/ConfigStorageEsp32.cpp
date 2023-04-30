@@ -33,6 +33,7 @@ bool ConfigStorageEsp32::LoadFromDoc(DynamicJsonDocument doc)
     _config->USE_IGNITION_SIGNAL_FROM_CAN_BUS = doc["USE_IGNITION_SIGNAL_FROM_CAN_BUS"];
     _config->GENERATE_POPUP_FOR_DOOR_STATUS   = doc["GENERATE_POPUP_FOR_DOOR_STATUS"];
     _config->HAS_RTC                          = doc["HAS_RTC"];
+    _config->REPLACE_REMOTE_MODE_BTN_WITH_SRC = doc["REPLACE_REMOTE_MODE_BTN_WITH_SRC"];
 
     JsonArray VIN_FOR_HEADUNIT = doc["VIN_FOR_HEADUNIT"];
     for (size_t i = 0; i < VIN_LENGTH; i++)
@@ -121,6 +122,7 @@ StaticJsonDocument<JSON_MEMORY_SIZE> ConfigStorageEsp32::GetConfig()
     _configJson["USE_IGNITION_SIGNAL_FROM_CAN_BUS"] = _config->USE_IGNITION_SIGNAL_FROM_CAN_BUS;
     _configJson["GENERATE_POPUP_FOR_DOOR_STATUS"]   = _config->GENERATE_POPUP_FOR_DOOR_STATUS;
     _configJson["HAS_RTC"]                          = _config->HAS_RTC;
+    _configJson["REPLACE_REMOTE_MODE_BTN_WITH_SRC"] = _config->REPLACE_REMOTE_MODE_BTN_WITH_SRC;
     _configJson["VERSION"]                          = _config->VERSION;
 
     JsonArray VIN_FOR_HEADUNIT = _configJson.createNestedArray("VIN_FOR_HEADUNIT");

@@ -19,6 +19,7 @@ MessageDecider::MessageDecider()
     _msgToProcess.push_back(0x217);
     _msgToProcess.push_back(0x227);
     _msgToProcess.push_back(0x361);
+    _msgToProcess.push_back(0x21F);
 
     // MSG to skip
     _msgToSkip.push_back(0x260);
