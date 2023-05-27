@@ -30,7 +30,7 @@ const int CAN_2010_VEHICLE_CONFIG_APV       = 0b0110;
 // Read right to left in documentation
 union CAN_236_2010_Byte1Struct{
     struct {
-        uint8_t vehicle_config          : 4; // bit 0-4
+        uint8_t vehicle_config          : 4; // bit 0-3
         uint8_t electric_network_status : 4; // bit 4-7
     } data;
     uint8_t asByte;
