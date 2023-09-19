@@ -104,6 +104,22 @@ void CAN2010ReadTaskFunction(void * parameter)
 
         if (canId > 0)
         {
+            if (canId == 0x347 && canLength == 6) {
+                canMessage[0] = 0x01; canMessage[1] = 0x00; canMessage[2] = 0xB2; canMessage[3] = 0x80; canMessage[4] = 0x00; canMessage[5] = 0x40;
+                canId = 0x15B;
+            }
+            if (canId == 0x347 && canLength == 7) {
+                canMessage[0] = 0x21; canMessage[1] = 0x1C; canMessage[2] = 0xB2; canMessage[3] = 0x9B; canMessage[4] = 0xE5; canMessage[5] = 0x40;
+                canId = 0x15B;
+            }
+            if (canId == 0x347 && canLength == 8) {
+                canMessage[0] = 0x21; canMessage[1] = 0x1C; canMessage[2] = 0xB2; canMessage[3] = 0x9B; canMessage[4] = 0xE5; canMessage[5] = 0x40;
+                canId = 0x15B;
+            }
+            // Bloqueio da ID 15B responsável pelo menu de parametrização. 1 Ativo 0 Desativado.
+            if (canId == 0x158) {
+                canMessage[0] = 0x00; canMessage[1] = 0x00; canMessage[2] = 0x00;
+            }
             //PrintCANArrayToSerial(canId, canMessage, canLength);
             /*
             if (canId == 0x217)
@@ -123,6 +139,11 @@ void CAN2010ReadTaskFunction(void * parameter)
                 debug_println(canMessage[3], HEX);
             }
             */
+           can2004Interface->SendMessage(canId, 0, canLength, canMessage);
+        }
+        else
+        {
+        can2004Interface->SendMessage(canId, 0, canLength, canMessage);
         }
         vTaskDelay(10 / portTICK_PERIOD_MS);
     }
