@@ -23,7 +23,7 @@ MessageDecider::MessageDecider()
 
     // MSG to skip
     _msgToSkip.push_back(0x260);
-    _msgToSkip.push_back(0x220);
+    //_msgToSkip.push_back(0x220);
     //VIN - we send the VIN which is set in the config
     _msgToSkip.push_back(0x2B6);
     _msgToSkip.push_back(0x3B6);
