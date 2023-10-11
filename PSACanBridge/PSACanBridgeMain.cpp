@@ -104,25 +104,24 @@ void CAN2010ReadTaskFunction(void * parameter)
 
         if (canId > 0)
         {
-            //PrintCANArrayToSerial(canId, canMessage, canLength);
+            //Blocking of ID specifics from BSI
+            if (canId == 0x260 || canId == 0x361 || canId == 0x0E6 || canId == 0x229 || canId == 0x15B || canId == 347) {
+          
+            }
+            else {  
             /*
-            if (canId == 0x217)
-            {
-            }
-
-            if (canId == 0x167)
-            {
-            }
-
-            if (canId == 0x257)
-            {
-                debug_print("Odo km:");
-                debug_print(canMessage[0], HEX);
-                debug_print(canMessage[1], HEX);
-                debug_print(canMessage[2], HEX);
-                debug_println(canMessage[3], HEX);
-            }
+                else if (canId == 0x257)
+                {
+                    debug_print("Odo km:");
+                    debug_print(canMessage[0], HEX);
+                    debug_print(canMessage[1], HEX);
+                    debug_print(canMessage[2], HEX);
+                    debug_println(canMessage[3], HEX);
+                }
             */
+                can2004Interface->SendMessage(canId, 0, canLength, canMessage);
+            }
+        //PrintCANArrayToSerial(canId, canMessage, canLength);
         }
         vTaskDelay(10 / portTICK_PERIOD_MS);
     }
