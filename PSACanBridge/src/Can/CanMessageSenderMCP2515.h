@@ -1,5 +1,7 @@
 #pragma once
 
+#ifdef AutowpCAN
+
 #ifndef _CanMessageSenderMCP2515_h
     #define _CanMessageSenderMCP2515_h
 
@@ -22,5 +24,7 @@ public:
     virtual bool ReadMessage(uint16_t *canId, uint8_t *len, uint8_t *buf) override;
     virtual void Reset() override;
 };
+
+#endif
 
 #endif

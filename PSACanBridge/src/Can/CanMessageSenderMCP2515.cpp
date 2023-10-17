@@ -1,3 +1,5 @@
+#ifdef AutowpCAN
+
 #include "CanMessageSenderMCP2515.h"
 #include "Arduino.h"
 
@@ -29,9 +31,7 @@ uint8_t CanMessageSenderMCP2515::SendMessage(uint16_t canId, uint8_t ext, uint8_
         tx_frame.data[i] = byteArray[i];
     }
 
-    //xSemaphoreTake(canSemaphore, portMAX_DELAY);
     can->sendMessage(&tx_frame);
-    //xSemaphoreGive(canSemaphore);
 
     return 1;
 }
@@ -52,12 +52,12 @@ bool CanMessageSenderMCP2515::ReadMessage(uint16_t *canId, uint8_t *len, uint8_t
         for (int i = 0; i < rx_frame.can_dlc; i++)
         {
             buf[i] = rx_frame.data[i];
-            //printf("0x%02X ", rx_frame.data.u8[i]);
         }
 
         return true;
     }else{
         uint8_t err = can->getErrorFlags();
+        printf("CAN2004 receive error: 0x%02X \r\n", err);
     }
     return false;
 }
@@ -71,3 +71,4 @@ void CanMessageSenderMCP2515::Reset()
     can->setBitrate(_canSpeed, _canClock);
     can->setNormalMode();
 }
+#endif

@@ -2,7 +2,7 @@
 #include <SPI.h>
 #include "Config.h"
 #include "src/Can/CanMessageSenderEsp32Idf.h"
-#include "src/Can/CanMessageSenderMCP2515.h"
+#include "src/Can/CanMessageSenderMCP2515CoryJ.h"
 #include "src/Can/CanMessageSenderOnSerial.h"
 #include "src/Can/CanDataConverter.h"
 #include "src/Can/ICanMessageSender.h"
@@ -259,7 +259,7 @@ void Init2004()
 
     spi2004 = new SPIClass();
     spi2004->begin(SCK_PIN, MISO_PIN, MOSI_PIN, CS_PIN);
-    can2004Interface = new CanMessageSenderMCP2515(CS_PIN, CAN_125KBPS, MCP_8MHZ, spi2004);
+    can2004Interface = new CanMessageSenderMCP2515CoryJ(CS_PIN, CAN_125KBPS, MCP_8MHZ, spi2004, serialPort);
 }
 
 void Init2010()
