@@ -117,7 +117,7 @@ uint8_t CanMessageSenderEsp32Idf::SendMessage(uint16_t canId, uint8_t ext, uint8
     return result;
 }
 
-void CanMessageSenderEsp32Idf::ReadMessage(uint16_t *canId, uint8_t *len, uint8_t *buf)
+bool CanMessageSenderEsp32Idf::ReadMessage(uint16_t *canId, uint8_t *len, uint8_t *buf)
 {
     twai_message_t message;
     if (twai_receive(&message, pdMS_TO_TICKS(10)) == ESP_OK) {
@@ -131,8 +131,14 @@ void CanMessageSenderEsp32Idf::ReadMessage(uint16_t *canId, uint8_t *len, uint8_
             }
             //PrintToSerial(*canId, 0, *len, buf);
         }
+        return true;
     } else {
         //printf("Failed to receive message\n");
-        return;
+        return false;
     }
+}
+
+void CanMessageSenderEsp32Idf::Reset()
+{
+
 }
