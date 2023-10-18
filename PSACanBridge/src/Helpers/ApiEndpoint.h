@@ -9,6 +9,7 @@
 #include "../Can/CanMessageHandlerContainer2010.h"
 #include "../Helpers/ConfigStorageEsp32.h"
 #include "../Helpers/TimeProvider.h"
+#include "../Helpers/DataBroker.h"
 
 // Includes for the server
 #include <ESPAsyncWebServer.h>
@@ -23,7 +24,8 @@ class ApiEndpoint
         CanMessageHandlerContainer2010* canMessageHandler,
         Config *config,
         ConfigStorageEsp32 *configStorage,
-        TimeProvider *timeProvider
+        TimeProvider *timeProvider,
+        DataBroker *dataBroker
         );
     virtual ~ApiEndpoint(){ }
 };

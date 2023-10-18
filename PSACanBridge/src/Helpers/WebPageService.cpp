@@ -19,12 +19,20 @@ void WiFiEvent(WiFiEvent_t event)
     if (event == ARDUINO_EVENT_WIFI_STA_START || event == ARDUINO_EVENT_WIFI_AP_START)
     {
         _wifiStarted = true;
+        WiFi.setTxPower(WIFI_POWER_MINUS_1dBm);
     }
 
     if (event == ARDUINO_EVENT_WIFI_STA_GOT_IP || event == ARDUINO_EVENT_ETH_GOT_IP)
     {
         _serialPort->print("Obtained IP address: ");
         _serialPort->println(WiFi.localIP());
+    }
+
+    if (event == ARDUINO_EVENT_WIFI_STA_DISCONNECTED || event == ARDUINO_EVENT_ETH_DISCONNECTED ||
+        event == ARDUINO_EVENT_WIFI_STA_STOP || event == ARDUINO_EVENT_WIFI_AP_STOP)
+    {
+        _wifiStarted = false;
+        _serialPort->println("WiFi stopped");
     }
 
 //
@@ -122,13 +130,15 @@ WebPageService::WebPageService(
     Config *config,
     ConfigStorageEsp32 *configStorage,
     AbsSer *serialPort,
-    TimeProvider *timeProvider
+    TimeProvider *timeProvider,
+    DataBroker *dataBroker
     )
 {
     _config = config;
     _configStorage = configStorage;
     _timeProvider = timeProvider;
     _canMessageHandler = canMessageHandler;
+    _dataBroker = dataBroker;
     _serialPort = serialPort;
 
     WiFi.onEvent(WiFiEvent);
@@ -152,6 +162,7 @@ void WebPageService::StartWifiClient()
 
 void WebPageService::Start()
 {
+    _stopInitiated = false;
     if (_config->WIFI_AP_MODE)
     {
         StartWifiAP();
@@ -162,29 +173,36 @@ void WebPageService::Start()
     }
 }
 
-void WebPageService::Loop()
+void WebPageService::Stop()
 {
+    WiFi.disconnect(true);  // Disconnect from the network
+    WiFi.mode(WIFI_OFF);    // Switch WiFi off
+}
+
+void WebPageService::Loop(unsigned long currentTime)
+{
+    if (_config->WIFI_TIMEOUT > 0 && _wifiStarted && (currentTime - _dataBroker->LastWebPageActivity) > _config->WIFI_TIMEOUT && !_stopInitiated)
+    {
+        _stopInitiated = true;
+        Stop();
+    }
+
     if (_wifiStarted && !_serverStarted)
     {
         //debug_println(WiFi.localIP());
         webServer = new AsyncWebServer(80);
-        //httpServer->setDefaultHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
-        //httpServer->setDefaultHeader("Access-Control-Allow-Origin",  "*");
-        //httpServer->setDefaultHeader("Access-Control-Allow-Headers", "*");
 
-        //httpServer->addMiddleware(&captiveMiddleware);
-        //AsyncElegantOTA.begin(webServer, "update", "147258");
         webPageEndpoint = new WebPageEndpoint(webServer);
-        apiEndpoint = new ApiEndpoint(webServer, _canMessageHandler, _config, _configStorage, _timeProvider);
+        apiEndpoint = new ApiEndpoint(webServer, _canMessageHandler, _config, _configStorage, _timeProvider, _dataBroker);
         webServer->begin();
         _serverStarted = true;
+        _dataBroker->LastWebPageActivity = currentTime;
 
         //debug_println("WebPageService started");
     }
 
-    if (_serverStarted)
+    if (_serverStarted && _wifiStarted)
     {
-        //webServer->loop();
         if (_config->WIFI_AP_MODE){
             dnsServer.processNextRequest();
         }

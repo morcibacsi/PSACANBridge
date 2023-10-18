@@ -232,6 +232,8 @@ class DataBroker
         uint8_t MDay;
         uint8_t Month;
         uint16_t Year;
+
+        unsigned long LastWebPageActivity = 0;
 };
 
 #endif

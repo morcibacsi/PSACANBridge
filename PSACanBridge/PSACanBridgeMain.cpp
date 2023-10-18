@@ -221,9 +221,11 @@ void CAN2004WriteTaskFunction(void* parameter)
 #ifdef WIFI_ENABLED
 void RunWebPageTaskFunction(void* parameter)
 {
+    unsigned long currentTime = 0;
     for (;;)
     {
-        webPageService->Loop();
+        currentTime = millis();
+        webPageService->Loop(currentTime);
 
         vTaskDelay(15 / portTICK_PERIOD_MS);
     }
@@ -302,7 +304,7 @@ void setup()
     );
 
     #ifdef WIFI_ENABLED
-        webPageService = new WebPageService(canMessageHandlerContainer2010, config, configStorage, serialPort, timeProvider);
+        webPageService = new WebPageService(canMessageHandlerContainer2010, config, configStorage, serialPort, timeProvider, dataBroker);
 
         #ifdef WEBSOCKET_SERIAL
         serialPort = new WebSocketSerAbs(webPageService->GetHTTPServer(), "/log");

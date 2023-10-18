@@ -29,6 +29,7 @@ struct Config
     #endif
 
     const bool REPLAY_MODE = REPLAY_MODE_VALUE;
+    unsigned long WIFI_TIMEOUT = 30 * 1000;
 
     bool MODIFY_217_WITH_CURRENT_SPEED = false;
     uint8_t CONSUMPTION_UNIT = 0;

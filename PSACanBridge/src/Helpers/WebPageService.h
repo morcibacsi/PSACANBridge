@@ -12,6 +12,7 @@
 #include "../Can/CanMessageHandlerContainer2010.h"
 #include "../Helpers/ConfigStorageEsp32.h"
 #include "../Helpers/TimeProvider.h"
+#include "../Helpers/DataBroker.h"
 #include "../SerialPort/AbstractSerial.h"
 
 // Includes for the server
@@ -22,10 +23,12 @@ class WebPageService
 {
     private:
     bool _serverStarted = false;
+    bool _stopInitiated = false;
     CanMessageHandlerContainer2010* _canMessageHandler;
     Config* _config;
     ConfigStorageEsp32* _configStorage;
     TimeProvider *_timeProvider;
+    DataBroker *_dataBroker;
 
     DNSServer dnsServer;
     AsyncWebServer* webServer;
@@ -41,12 +44,14 @@ class WebPageService
         Config *config,
         ConfigStorageEsp32 *configStorage,
         AbsSer *serialPort,
-        TimeProvider *timeProvider
+        TimeProvider *timeProvider,
+        DataBroker *dataBroker
         );
     virtual ~WebPageService(){ }
     void Start();
+    void Stop();
     AsyncWebServer* GetHTTPServer();
-    void Loop();
+    void Loop(unsigned long currentTime);
 };
 #endif
 #endif

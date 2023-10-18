@@ -9,6 +9,7 @@ static CanMessageHandlerContainer2010* _canMessageHandler;
 static Config* _config;
 static ConfigStorageEsp32 *_configStorage;
 static TimeProvider *_timeProvider;
+static DataBroker *_dataBroker;
 
 void sendResponse(AsyncWebServerRequest* request, bool success, int8_t failedAt, uint8_t trace)
 {
@@ -30,6 +31,12 @@ void sendResponse(AsyncWebServerRequest* request, bool success, int8_t failedAt,
     AsyncResponseStream* response = request->beginResponseStream("application/json");
     serializeJson(jsonResponse, *response);
     request->send(response);
+}
+
+void handleKeepAliveGetEvent(AsyncWebServerRequest* request)
+{
+    _dataBroker->LastWebPageActivity = millis();
+    sendResponse(request, true, 0, 0);
 }
 
 void handleConfigGetEvent(AsyncWebServerRequest* request)
@@ -164,13 +171,19 @@ ApiEndpoint::ApiEndpoint(
     CanMessageHandlerContainer2010* canMessageHandler,
     Config *config,
     ConfigStorageEsp32 *configStorage,
-    TimeProvider *timeProvider
+    TimeProvider *timeProvider,
+    DataBroker *dataBroker
     )
 {
     _canMessageHandler = canMessageHandler;
     _config = config;
     _configStorage = configStorage;
     _timeProvider = timeProvider;
+    _dataBroker = dataBroker;
+
+    webServer->on("/api/keepalive", HTTP_GET, [](AsyncWebServerRequest* request) {
+        handleKeepAliveGetEvent(request);
+    });
 
     webServer->on("/api/config", HTTP_GET, [](AsyncWebServerRequest* request) {
         handleConfigGetEvent(request);
