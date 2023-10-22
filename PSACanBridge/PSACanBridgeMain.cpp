@@ -225,7 +225,19 @@ void RunWebPageTaskFunction(void* parameter)
     for (;;)
     {
         currentTime = millis();
-        webPageService->Loop(currentTime);
+
+        if (webPageService->IsRunning())
+        {
+            webPageService->Loop(currentTime);
+        }
+        else
+        {
+            if (dataBroker->IsFrontLeftDoorOpen && dataBroker->LeftTurnIndicator == 1 && dataBroker->RightTurnIndicator == 1 && dataBroker->HighBeam == 1)
+            {
+                webPageService->Start();
+                dataBroker->LastWebPageActivity = currentTime;
+            }
+        }
 
         vTaskDelay(15 / portTICK_PERIOD_MS);
     }
@@ -310,7 +322,7 @@ void setup()
         serialPort = new WebSocketSerAbs(webPageService->GetHTTPServer(), "/log");
         #endif
 
-        webPageService->Start();
+        //webPageService->Start();
     #endif
 
     xTaskCreatePinnedToCore(

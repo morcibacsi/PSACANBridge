@@ -9,6 +9,7 @@
 #include <DNSServer.h>
 
 static bool _wifiStarted = false;
+static bool _startInited = false;
 static AbsSer* _serialPort;
 
 IPAddress apIP(192, 168, 100, 1);
@@ -32,6 +33,7 @@ void WiFiEvent(WiFiEvent_t event)
         event == ARDUINO_EVENT_WIFI_STA_STOP || event == ARDUINO_EVENT_WIFI_AP_STOP)
     {
         _wifiStarted = false;
+        _startInited = false;
         _serialPort->println("WiFi stopped");
     }
 
@@ -162,6 +164,11 @@ void WebPageService::StartWifiClient()
 
 void WebPageService::Start()
 {
+    if (_startInited)
+    {
+        return;
+    }
+    _startInited = true;
     _stopInitiated = false;
     if (_config->WIFI_AP_MODE)
     {
@@ -177,6 +184,11 @@ void WebPageService::Stop()
 {
     WiFi.disconnect(true);  // Disconnect from the network
     WiFi.mode(WIFI_OFF);    // Switch WiFi off
+}
+
+bool WebPageService::IsRunning()
+{
+    return _wifiStarted;
 }
 
 void WebPageService::Loop(unsigned long currentTime)

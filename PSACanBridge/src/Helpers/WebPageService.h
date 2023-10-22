@@ -50,6 +50,7 @@ class WebPageService
     virtual ~WebPageService(){ }
     void Start();
     void Stop();
+    bool IsRunning();
     AsyncWebServer* GetHTTPServer();
     void Loop(unsigned long currentTime);
 };

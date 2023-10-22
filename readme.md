@@ -59,7 +59,11 @@ I used the software in my car for months, without any sign of errors. However I 
  - Web page to setup the board
  - OTA support
 
-[![WATCH IT ON YOUTUBE](https://img.youtube.com/vi/Qk7EEoJt94w/0.jpg)](https://www.youtube.com/watch?v=Qk7EEoJt94w "Watch it on YouTube")
+### Note on the setup web page (captive portal)
+
+To reduce power consumption and improve compatibility with step down converters, the captive portal doesn't start automatically. You can start it by opening the **front left door** and simultaneously turning on the **headlights high beam** and the **emergency lights**.
+
+ [![WATCH IT ON YOUTUBE](https://img.youtube.com/vi/Qk7EEoJt94w/0.jpg)](https://www.youtube.com/watch?v=Qk7EEoJt94w "Watch it on YouTube")
 
 ### Compatibility
 
