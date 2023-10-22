@@ -33,6 +33,12 @@ void sendResponse(AsyncWebServerRequest* request, bool success, int8_t failedAt,
     request->send(response);
 }
 
+void handleRebootGetEvent(AsyncWebServerRequest* request)
+{
+    sendResponse(request, true, 0, 0);
+    ESP.restart();
+}
+
 void handleKeepAliveGetEvent(AsyncWebServerRequest* request)
 {
     _dataBroker->LastWebPageActivity = millis();
@@ -180,6 +186,10 @@ ApiEndpoint::ApiEndpoint(
     _configStorage = configStorage;
     _timeProvider = timeProvider;
     _dataBroker = dataBroker;
+
+    webServer->on("/api/reboot", HTTP_GET, [](AsyncWebServerRequest* request) {
+        handleRebootGetEvent(request);
+    });
 
     webServer->on("/api/keepalive", HTTP_GET, [](AsyncWebServerRequest* request) {
         handleKeepAliveGetEvent(request);
