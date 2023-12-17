@@ -64,6 +64,7 @@ I used the software in my car for months, without any sign of errors. However I 
 To reduce power consumption and improve compatibility with step down converters, the captive portal doesn't start automatically. You can start it by opening the **front left door** and simultaneously turning on the **headlights high beam** and the **emergency lights**.
 
  [![WATCH IT ON YOUTUBE](https://img.youtube.com/vi/Qk7EEoJt94w/0.jpg)](https://www.youtube.com/watch?v=Qk7EEoJt94w "Watch it on YouTube")
+ [![WATCH IT ON YOUTUBE](https://img.youtube.com/vi/REh-MzDdc30/0.jpg)](https://www.youtube.com/watch?v=REh-MzDdc30 "Watch it on YouTube")
 
 ### Compatibility
 
