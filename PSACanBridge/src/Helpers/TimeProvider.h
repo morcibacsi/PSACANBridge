@@ -4,12 +4,14 @@
     #define _TimeProvider_h
 
 #include "../Helpers/DataBroker.h"
+#include "../SerialPort/AbstractSerial.h"
 #include "../../Config.h"
 #include <ErriezDS3231.h>
 #include <Wire.h>
 
 class TimeProvider {
 
+AbsSer *_serialPort;
 Config *_config;
 unsigned long _previousTime = 0;
 DataBroker *_dataBroker;
@@ -19,7 +21,7 @@ uint8_t _sclPin;
 bool _started = false;
 
 public:
-    TimeProvider(uint8_t sdaPin, uint8_t sclPin, DataBroker *dataBroker, Config *config);
+    TimeProvider(uint8_t sdaPin, uint8_t sclPin, DataBroker *dataBroker, Config *config, AbsSer *serialPort);
 
     void Start();
     bool Process(unsigned long currentTime);

@@ -19,6 +19,14 @@
 #include "src/Helpers/DebugPrint.h"
 #include "src/Helpers/MessageDecider.h"
 #include "src/Helpers/TimeProvider.h"
+#include "src/Helpers/CPUConfig.h"
+
+#ifdef BOARD_TYPE_ESP32_C3
+    #include "BoardConfig_ESP32_C3.h"
+#endif
+#ifdef BOARD_TYPE_ESP32
+    #include "BoardConfig_ESP32.h"
+#endif
 
 #ifdef USE_BLUETOOTH_SERIAL
     #include <BluetoothSerial.h>
@@ -26,6 +34,7 @@
     BluetoothSerial SerialBT;
 #else
     #include "src/SerialPort/HardwareSerialAbs.h"
+    #include "src/SerialPort/USBSerialAbs.h"
 #endif
 
 #ifdef WIFI_ENABLED
@@ -37,9 +46,6 @@
     TaskHandle_t RunWebPageTask;
 #endif
 
-// CAN 2010
-constexpr uint8_t CAN_RX_PIN = 18;
-constexpr uint8_t CAN_TX_PIN = 15;
 
 SPIClass* spi2004;
 
@@ -98,12 +104,19 @@ void CAN2010ReadTaskFunction(void * parameter)
 
     for (;;)
     {
+        if (webPageService->IsRunning())
+        {
+            vTaskDelay(10 / portTICK_PERIOD_MS);
+            continue;
+        }
+
         canId = 0;
         can2010Interface->ReadMessage(&canId, &canLength, canMessage);
         currentTime = millis();
 
         if (canId > 0)
         {
+            //can2004Interface->SendMessage(canId, 0, canLength, canMessage);
             //PrintCANArrayToSerial(canId, canMessage, canLength);
             /*
             if (canId == 0x217)
@@ -130,10 +143,16 @@ void CAN2010ReadTaskFunction(void * parameter)
 
 void IRAM_ATTR CAN2004ReadTaskFunction(void * parameter)
 {
+    unsigned long lastSuccessfulRead = 0;
     unsigned long currentTime = 0;
+    unsigned long ledTime = 0;
     uint16_t canId = 0;
     uint8_t canLength = 0;
     uint8_t canMessage[8] = {0};
+
+    uint8_t ledPin = BOARD_LED_PIN;
+    bool ledStatus = false;
+    pinMode(ledPin, OUTPUT);
 
     SerialReader *serialReader = new SerialReader(serialPort, config, dataBroker);
 
@@ -143,15 +162,39 @@ void IRAM_ATTR CAN2004ReadTaskFunction(void * parameter)
 
     for (;;)
     {
+        if (webPageService->IsRunning())
+        {
+            vTaskDelay(10 / portTICK_PERIOD_MS);
+            continue;
+        }
+
         currentTime = millis();
         canId = 0;
         canLength = 0;
+
+        if (currentTime - ledTime > 200)
+        {
+            ledTime = currentTime;
+            digitalWrite(ledPin, ledStatus);
+            ledStatus = !ledStatus;
+        }
 
         //serialReader->Receive(&canLength, canMessage);
         if (config->REPLAY_MODE == false)
         {
             //serialPort->println("Read 2004");
-            can2004Interface->ReadMessage(&canId, &canLength, canMessage);
+            bool readSuccess = can2004Interface->ReadMessage(&canId, &canLength, canMessage);
+            if (readSuccess)
+            {
+                lastSuccessfulRead = currentTime;
+            }
+            else if (currentTime - lastSuccessfulRead > 150)
+            {
+                serialPort->println("Resetting CAN2004");
+                can2004Interface->Reset();
+                //lastSuccessfulRead = 0;
+                continue;
+            }
         }
 
         if (canId > 0)
@@ -171,6 +214,12 @@ void IRAM_ATTR CAN2004ReadTaskFunction(void * parameter)
             if (shouldProcess == SHOULD_FORWARD_TO_2010)
             {
                 can2010Interface->SendMessage(canId, 0, canLength, canMessage);
+            }
+
+            if (dataBroker->IsFrontLeftDoorOpen && dataBroker->LeftTurnIndicator == 1 && dataBroker->RightTurnIndicator == 1 && dataBroker->HighBeam == 1)
+            {
+                webPageService->Start();
+                dataBroker->LastWebPageActivity = currentTime;
             }
         }
         if (config->REPLAY_MODE)
@@ -205,6 +254,12 @@ void CAN2004WriteTaskFunction(void* parameter)
     unsigned long currentTime = 0;
     for (;;)
     {
+        if (webPageService->IsRunning())
+        {
+            vTaskDelay(10 / portTICK_PERIOD_MS);
+            continue;
+        }
+
         currentTime = millis();
 
         //serialPort->println("Ignition");
@@ -225,20 +280,10 @@ void RunWebPageTaskFunction(void* parameter)
     for (;;)
     {
         currentTime = millis();
-
         if (webPageService->IsRunning())
         {
             webPageService->Loop(currentTime);
         }
-        else
-        {
-            if (dataBroker->IsFrontLeftDoorOpen && dataBroker->LeftTurnIndicator == 1 && dataBroker->RightTurnIndicator == 1 && dataBroker->HighBeam == 1)
-            {
-                webPageService->Start();
-                dataBroker->LastWebPageActivity = currentTime;
-            }
-        }
-
         vTaskDelay(15 / portTICK_PERIOD_MS);
     }
 }
@@ -255,7 +300,11 @@ void InitSerialPort()
 #ifdef USE_BLUETOOTH_SERIAL
     serialPort = new BluetoothSerAbs(SerialBT, bluetoothDeviceName);
 #else
-    serialPort = new HwSerAbs(Serial);
+    #ifdef BOARD_TYPE_ESP32_C3
+        serialPort = new UsbSerAbs(Serial);
+    #else
+        serialPort = new HwSerAbs(Serial);
+    #endif
 #endif
 
     serialPort->begin(500000);
@@ -266,18 +315,22 @@ void InitSerialPort()
 
 void Init2004()
 {
-    constexpr uint8_t SCK_PIN  = 25;
-    constexpr uint8_t MISO_PIN = 5;
-    constexpr uint8_t MOSI_PIN = 33;
-    constexpr uint8_t CS_PIN   = 32;
+    uint8_t SPI_INSTANCE = BOARD_SPI_INSTANCE;
+    uint8_t SCK_PIN  = BOARD_SCK_PIN;
+    uint8_t MISO_PIN = BOARD_MISO_PIN;
+    uint8_t MOSI_PIN = BOARD_MOSI_PIN;
+    uint8_t CS_PIN   = BOARD_CS_PIN;
 
-    spi2004 = new SPIClass();
+    spi2004 = new SPIClass(SPI_INSTANCE);
     spi2004->begin(SCK_PIN, MISO_PIN, MOSI_PIN, CS_PIN);
     can2004Interface = new CanMessageSenderMCP2515CoryJ(CS_PIN, CAN_125KBPS, MCP_8MHZ, spi2004, serialPort);
 }
 
 void Init2010()
 {
+    uint8_t CAN_RX_PIN = BOARD_CAN_RX_PIN;
+    uint8_t CAN_TX_PIN = BOARD_CAN_TX_PIN;
+
     can2010Interface = new CanMessageSenderEsp32Idf(CAN_RX_PIN, CAN_TX_PIN, false, serialPort);
     //canInterface = new CanMessageSenderOnSerial(serialPort);
     can2010Interface->Init();
@@ -285,8 +338,8 @@ void Init2010()
 
 void setup()
 {
-    constexpr uint8_t SDA_PIN = 16;//RX2 - 16
-    constexpr uint8_t SCL_PIN = 17;//TX2 - 17
+    uint8_t SDA_PIN = BOARD_SDA_PIN;
+    uint8_t SCL_PIN = BOARD_SCL_PIN;
 
     deviceInfo = new GetDeviceInfoEsp32();
     dataBroker = new DataBroker();
@@ -298,9 +351,10 @@ void setup()
     Init2004();
 
     configStorage = new ConfigStorageEsp32(config);
-    configStorage->Load();
+    //configStorage->Remove();
+    bool configLoaded = configStorage->Load();
 
-    timeProvider = new TimeProvider(SDA_PIN, SCL_PIN, dataBroker, config);
+    timeProvider = new TimeProvider(SDA_PIN, SCL_PIN, dataBroker, config, serialPort);
     timeProvider->Start();
 
     canMessageHandlerContainer2010 = new CanMessageHandlerContainer2010(can2010Interface, config, dataBroker);
@@ -322,54 +376,73 @@ void setup()
         serialPort = new WebSocketSerAbs(webPageService->GetHTTPServer(), "/log");
         #endif
 
-        //webPageService->Start();
+        if (configLoaded == false)
+        {
+            webPageService->Start();
+        }
+    #endif
+
+    #ifdef BOARD_TYPE_ESP32
+        cpu_config_t CAN2010WriteTaskConfig    = { .cpu_core = 0, .priority = 2, .stack_size = 15000 };
+        cpu_config_t CAN2004ReadDataTaskConfig = { .cpu_core = 1, .priority = 1, .stack_size = 20000 };
+        cpu_config_t CAN2004WriteTaskConfig    = { .cpu_core = 0, .priority = 0, .stack_size = 20000 };
+        cpu_config_t CAN2010ReadTaskConfig     = { .cpu_core = 0, .priority = 1, .stack_size = 10000 };
+        cpu_config_t RunWebPageTaskConfig      = { .cpu_core = 0, .priority = 0, .stack_size = 10000 };
+    #endif
+
+    #ifdef BOARD_TYPE_ESP32_C3
+        cpu_config_t CAN2010WriteTaskConfig    = { .cpu_core = 0, .priority = 5, .stack_size = 10000 };
+        cpu_config_t CAN2004ReadDataTaskConfig = { .cpu_core = 0, .priority = 4, .stack_size = 10000 };
+        cpu_config_t CAN2004WriteTaskConfig    = { .cpu_core = 0, .priority = 3, .stack_size = 10000 };
+        cpu_config_t CAN2010ReadTaskConfig     = { .cpu_core = 0, .priority = 2, .stack_size = 10000 };
+        cpu_config_t RunWebPageTaskConfig      = { .cpu_core = 0, .priority = 1, .stack_size = 10000 };
     #endif
 
     xTaskCreatePinnedToCore(
-        CAN2010WriteTaskFunction,       // Function to implement the task
-        "CAN2010WriteTask",             // Name of the task
-        15000,                          // Stack size in words
-        NULL,                           // Task input parameter
-        2,                              // Priority of the task (higher the number, higher the priority)
-        &CAN2010WriteTask,              // Task handle.
-        0);                             // Core where the task should run
+        CAN2010WriteTaskFunction,         // Function to implement the task
+        "CAN2010WriteTask",               // Name of the task
+        CAN2010WriteTaskConfig.stack_size,// Stack size in words
+        NULL,                             // Task input parameter
+        CAN2010WriteTaskConfig.priority,  // Priority of the task (higher the number, higher the priority)
+        &CAN2010WriteTask,                // Task handle.
+        CAN2010WriteTaskConfig.cpu_core); // Core where the task should run
 ///*
     xTaskCreatePinnedToCore(
-        CAN2004ReadTaskFunction,        // Function to implement the task
-        "CAN2004ReadDataTask",          // Name of the task
-        20000,                          // Stack size in words
-        NULL,                           // Task input parameter
-        1,                              // Priority of the task (higher the number, higher the priority)
-        &CAN2004ReadDataTask,           // Task handle.
-        1);                             // Core where the task should run
+        CAN2004ReadTaskFunction,              // Function to implement the task
+        "CAN2004ReadDataTask",                // Name of the task
+        CAN2004ReadDataTaskConfig.stack_size, // Stack size in words
+        NULL,                                 // Task input parameter
+        CAN2004ReadDataTaskConfig.priority,   // Priority of the task (higher the number, higher the priority)
+        &CAN2004ReadDataTask,                 // Task handle.
+        CAN2004ReadDataTaskConfig.cpu_core);  // Core where the task should run
 //*/
     xTaskCreatePinnedToCore(
-        CAN2004WriteTaskFunction,       // Function to implement the task
-        "CAN2004WriteTask",             // Name of the task
-        20000,                          // Stack size in words
-        NULL,                           // Task input parameter
-        0,                              // Priority of the task (higher the number, higher the priority)
-        &CAN2004WriteTask,              // Task handle.
-        0);                             // Core where the task should run
+        CAN2004WriteTaskFunction,        // Function to implement the task
+        "CAN2004WriteTask",              // Name of the task
+        CAN2004WriteTaskConfig.stack_size,// Stack size in words
+        NULL,                            // Task input parameter
+        CAN2004WriteTaskConfig.priority, // Priority of the task (higher the number, higher the priority)
+        &CAN2004WriteTask,               // Task handle.
+        CAN2004WriteTaskConfig.cpu_core); // Core where the task should run
 
     xTaskCreatePinnedToCore(
-        CAN2010ReadTaskFunction,        // Function to implement the task
-        "CAN2010ReadTask",              // Name of the task
-        10000,                          // Stack size in words
-        NULL,                           // Task input parameter
-        1,                              // Priority of the task (higher the number, higher the priority)
-        &CAN2010ReadTask,               // Task handle.
-        0);                             // Core where the task should run
+        CAN2010ReadTaskFunction,         // Function to implement the task
+        "CAN2010ReadTask",               // Name of the task
+        CAN2010ReadTaskConfig.stack_size,// Stack size in words
+        NULL,                            // Task input parameter
+        CAN2010ReadTaskConfig.priority,  // Priority of the task (higher the number, higher the priority)
+        &CAN2010ReadTask,                // Task handle.
+        CAN2010ReadTaskConfig.cpu_core); // Core where the task should run
 
 #ifdef WIFI_ENABLED
     xTaskCreatePinnedToCore(
         RunWebPageTaskFunction,         // Function to implement the task
         "RunWebPageTask",               // Name of the task
-        10000,                          // Stack size in words
+        RunWebPageTaskConfig.stack_size,// Stack size in words
         NULL,                           // Task input parameter
-        0,                              // Priority of the task (higher the number, higher the priority)
+        RunWebPageTaskConfig.priority,  // Priority of the task (higher the number, higher the priority)
         &RunWebPageTask,                // Task handle.
-        0);                             // Core where the task should run
+        RunWebPageTaskConfig.cpu_core); // Core where the task should run
 #endif
 }
 

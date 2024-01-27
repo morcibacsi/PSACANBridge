@@ -1,7 +1,8 @@
 #include "TimeProvider.h"
 
-TimeProvider::TimeProvider(uint8_t sdaPin, uint8_t sclPin, DataBroker *dataBroker, Config *config)
+TimeProvider::TimeProvider(uint8_t sdaPin, uint8_t sclPin, DataBroker *dataBroker, Config *config, AbsSer *serialPort)
 {
+    _serialPort = serialPort;
     _dataBroker = dataBroker;
     _config = config;
     _sdaPin = sdaPin;
@@ -38,7 +39,7 @@ bool TimeProvider::Process(unsigned long currentTime)
     {
         _previousTime = currentTime;
         _rtc.getDateTime(&_dataBroker->Hour, &_dataBroker->Minute, &_dataBroker->Second, &_dataBroker->MDay, &_dataBroker->Month, &_dataBroker->Year, &wday);
-
+        //_serialPort->println("TimeProvider::Process: " + String(_dataBroker->Hour) + ":" + String(_dataBroker->Minute) + ":" + String(_dataBroker->Second));
         return true;
     }
 
