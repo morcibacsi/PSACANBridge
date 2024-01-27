@@ -12,7 +12,7 @@
 #include "../Helpers/DataBroker.h"
 
 // Includes for the server
-#include <ESPAsyncWebServer.h>
+#include <WebServer.h>
 #include <AsyncJson.h>
 
 class ApiEndpoint
@@ -20,7 +20,7 @@ class ApiEndpoint
     private:
     public:
     ApiEndpoint(
-        AsyncWebServer* webServer,
+        WebServer* webServer,
         CanMessageHandlerContainer2010* canMessageHandler,
         Config *config,
         ConfigStorageEsp32 *configStorage,

@@ -4,57 +4,46 @@
 #include <ArduinoJson.h>
 #include "WWWData.h"
 
-void handleRootPage(AsyncWebServerRequest* request) {
-    AsyncWebServerResponse *response = request->beginResponse_P(200, "text/html", ESP_REACT_DATA_0, sizeof(ESP_REACT_DATA_0));
-    response->addHeader("Content-Encoding", "gzip");
-    request->send(response);
+WebServer* _webServer;
+
+void handleRootPage() {
+    _webServer->sendHeader("Content-Encoding", "gzip");
+    const char* charArray = reinterpret_cast<const char*>(ESP_REACT_DATA_0);
+    _webServer->send_P(200, "text/html", charArray, sizeof(ESP_REACT_DATA_0));
 }
 
-void handleData_1(AsyncWebServerRequest* request) {
-    AsyncWebServerResponse *response = request->beginResponse_P(200, "application/javascript", ESP_REACT_DATA_1, sizeof(ESP_REACT_DATA_1));
-    response->addHeader("Content-Encoding", "gzip");
-    request->send(response);
+void handleData_1() {
+    _webServer->sendHeader("Content-Encoding", "gzip");
+    const char* charArray = reinterpret_cast<const char*>(ESP_REACT_DATA_1);
+    _webServer->send_P(200, "text/html", charArray, sizeof(ESP_REACT_DATA_1));
 }
 
-void handleData_2(AsyncWebServerRequest* request) {
-    AsyncWebServerResponse *response = request->beginResponse_P(200, "application/javascript", ESP_REACT_DATA_2, sizeof(ESP_REACT_DATA_2));
-    response->addHeader("Content-Encoding", "gzip");
-    request->send(response);
+void handleData_2() {
+    _webServer->sendHeader("Content-Encoding", "gzip");
+    const char* charArray = reinterpret_cast<const char*>(ESP_REACT_DATA_2);
+    _webServer->send_P(200, "text/html", charArray, sizeof(ESP_REACT_DATA_2));
 }
 
-void handleData_3(AsyncWebServerRequest* request) {
-    AsyncWebServerResponse *response = request->beginResponse_P(200, "text/css", ESP_REACT_DATA_3, sizeof(ESP_REACT_DATA_3));
-    response->addHeader("Content-Encoding", "gzip");
-    request->send(response);
+void handleData_3() {
+    _webServer->sendHeader("Content-Encoding", "gzip");
+    const char* charArray = reinterpret_cast<const char*>(ESP_REACT_DATA_3);
+    _webServer->send_P(200, "text/html", charArray, sizeof(ESP_REACT_DATA_3));
 }
 
-WebPageEndpoint::WebPageEndpoint(AsyncWebServer* webServer)
+void handleNotFound() {
+    _webServer->send(404, "application/json", "{\"message\":\"Endpoint not found\"}");
+}
+
+WebPageEndpoint::WebPageEndpoint(WebServer* webServer)
 {
-    webServer->onNotFound([](AsyncWebServerRequest *request) {
-        request->send(404, "application/json", "{\"message\":\"Endpoint not found\"}");
-        //request->redirect("/");
-    });
+    _webServer = webServer;
 
-    //This is an example of triggering for a known location. This one seems to be common for android devices
-    webServer->on("/generate_204", HTTP_GET, [](AsyncWebServerRequest *request){
-        handleRootPage(request);
-    });
-
-    webServer->on("/", HTTP_GET, [](AsyncWebServerRequest* request) {
-        handleRootPage(request);
-    });
-
-    webServer->on("/index.html", HTTP_GET, [](AsyncWebServerRequest* request) {
-        handleRootPage(request);
-    });
-    webServer->on("/scripts/main.js", HTTP_GET, [](AsyncWebServerRequest* request) {
-        handleData_1(request);
-    });
-    webServer->on("/scripts/vendor.js", HTTP_GET, [](AsyncWebServerRequest* request) {
-        handleData_2(request);
-    });
-    webServer->on("/styles/app.css", HTTP_GET, [](AsyncWebServerRequest* request) {
-        handleData_3(request);
-    });
+    _webServer->on("/generate_204", HTTP_GET, handleRootPage);
+    _webServer->on("/", HTTP_GET, handleRootPage);
+    _webServer->on("/index.html", HTTP_GET, handleRootPage);
+    _webServer->on("/scripts/main.js", HTTP_GET, handleData_1);
+    _webServer->on("/scripts/vendor.js", HTTP_GET, handleData_2);
+    _webServer->on("/styles/app.css", HTTP_GET, handleData_3);
+    _webServer->onNotFound(handleNotFound);
 }
 #endif

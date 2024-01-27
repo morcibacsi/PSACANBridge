@@ -8,13 +8,13 @@
 #include <inttypes.h>
 
 // Includes for the server
-#include <ESPAsyncWebServer.h>
+#include <WebServer.h>
 
 class WebPageEndpoint
 {
     private:
     public:
-    WebPageEndpoint(AsyncWebServer* webServer);
+    WebPageEndpoint(WebServer* webServer);
     virtual ~WebPageEndpoint(){ }
 };
 #endif

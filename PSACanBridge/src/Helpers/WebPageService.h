@@ -16,7 +16,7 @@
 #include "../SerialPort/AbstractSerial.h"
 
 // Includes for the server
-#include <ESPAsyncWebServer.h>
+#include <WebServer.h>
 #include <DNSServer.h>
 
 class WebPageService
@@ -28,10 +28,9 @@ class WebPageService
     Config* _config;
     ConfigStorageEsp32* _configStorage;
     TimeProvider *_timeProvider;
-    DataBroker *_dataBroker;
 
     DNSServer dnsServer;
-    AsyncWebServer* webServer;
+    WebServer* webServer;
     ApiEndpoint* apiEndpoint;
     WebPageEndpoint* webPageEndpoint;
 
@@ -51,7 +50,7 @@ class WebPageService
     void Start();
     void Stop();
     bool IsRunning();
-    AsyncWebServer* GetHTTPServer();
+    WebServer* GetHTTPServer();
     void Loop(unsigned long currentTime);
 };
 #endif
