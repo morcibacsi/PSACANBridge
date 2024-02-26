@@ -13,7 +13,6 @@
 
 // Includes for the server
 #include <WebServer.h>
-#include <AsyncJson.h>
 
 class ApiEndpoint
 {
