@@ -325,6 +325,10 @@ void IRAM_ATTR CanDataConverter::Handle_1A8()
     _dataBroker->CruiseControlActivateFunction         = tmp.Field1.data.activate_function;
     _dataBroker->CruiseControlSelectedFunction         = tmp.Field1.data.selected_function;
     _dataBroker->CruiseControlStatusOfSelectedFunction = tmp.Field1.data.status_of_selected_function;
+    _dataBroker->TripOnCMB.data.leftByte               = can2004Data[5];
+    _dataBroker->TripOnCMB.data.middleByte             = can2004Data[6];
+    _dataBroker->TripOnCMB.data.rightByte              = can2004Data[7];
+
 
     _canMessageHandlerContainer2010->SetData(0x1A8);
     _canMessageHandlerContainer2010->SendMessageForced(0x1A8, _currentTime);

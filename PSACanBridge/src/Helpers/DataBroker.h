@@ -225,6 +225,7 @@ class DataBroker
 
         //UInt16 CruiseControlSpeed;
         uint8_t SpeedInKmh; //speed in km/h
+        UInt24 TripOnCMB;
 
         uint8_t Hour;
         uint8_t Minute;

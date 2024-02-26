@@ -16,16 +16,6 @@ class MessageHandler_1A8 : public ICanMessageHandler
     public:
     MessageHandler_1A8(ICanMessageSender* object, DataBroker *dataBroker): ICanMessageHandler(object, dataBroker, 0x1A8, 8, 200)
     {
-        /*
-        _data[0] = 0x00;
-        _data[1] = 0xFF;
-        _data[2] = 0xFF;
-        _data[3] = 0xFF;
-        _data[4] = 0xFF;
-        _data[5] = 0x07;//mileage
-        _data[6] = 0x8B;
-        _data[7] = 0x58;
-        */
         _wasDataSet = true;
     };
 
