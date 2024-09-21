@@ -27,6 +27,9 @@
 #ifdef BOARD_TYPE_ESP32
     #include "BoardConfig_ESP32.h"
 #endif
+#ifdef BOARD_TYPE_ESP32_V15
+    #include "BoardConfig_ESP32_v15.h"
+#endif
 
 #ifdef USE_BLUETOOTH_SERIAL
     #include <BluetoothSerial.h>
@@ -382,7 +385,7 @@ void setup()
         }
     #endif
 
-    #ifdef BOARD_TYPE_ESP32
+    #if defined(BOARD_TYPE_ESP32) || defined(BOARD_TYPE_ESP32_V15)
         cpu_config_t CAN2010WriteTaskConfig    = { .cpu_core = 0, .priority = 2, .stack_size = 15000 };
         cpu_config_t CAN2004ReadDataTaskConfig = { .cpu_core = 1, .priority = 1, .stack_size = 20000 };
         cpu_config_t CAN2004WriteTaskConfig    = { .cpu_core = 0, .priority = 0, .stack_size = 20000 };

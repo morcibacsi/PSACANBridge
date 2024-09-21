@@ -17,7 +17,8 @@ struct Config
         #define BOARD_TYPE_ESP32_C3
     #endif
     #ifdef PIO_INI_BOARD_ESP32
-        #define BOARD_TYPE_ESP32
+        //#define BOARD_TYPE_ESP32
+        #define BOARD_TYPE_ESP32_V15
     #endif
 
     #define PRINT_DEBUG
