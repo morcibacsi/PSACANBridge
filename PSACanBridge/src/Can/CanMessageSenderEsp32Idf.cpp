@@ -34,10 +34,9 @@ void CanMessageSenderEsp32Idf::PrintToSerial(uint16_t canId, uint8_t ext, uint8_
     }
 }
 
-CanMessageSenderEsp32Idf::CanMessageSenderEsp32Idf(uint8_t rxPin, uint8_t txPin, bool enableThrottling, AbsSer *serialPort, uint8_t handle)
+CanMessageSenderEsp32Idf::CanMessageSenderEsp32Idf(uint8_t rxPin, uint8_t txPin, AbsSer *serialPort, uint8_t handle)
 {
     _serialPort = serialPort;
-    _enableThrottling = enableThrottling;
     _prevCanId = 0;
 
     twai_general_config_t g_config = {.controller_id = handle,
@@ -75,21 +74,6 @@ uint8_t CanMessageSenderEsp32Idf::SendMessage(uint16_t canId, uint8_t ext, uint8
     memcpy(message.data, byteArray, sizeOfByteArray);
 
     PrintToSerial(canId, ext, sizeOfByteArray, message.data);
-    //workaround to avoid weird errors on screen
-    if (_enableThrottling)
-    {
-        unsigned long currentTime = millis();
-        if (_prevCanId != canId)
-        {
-            unsigned long delayFromLastTransmission = currentTime - _prevCanIdTime;
-            if (delayFromLastTransmission < 15)
-            {
-                delay(15 - delayFromLastTransmission);
-            }
-            _prevCanIdTime = currentTime;
-            _prevCanId = canId;
-        }
-    }
 
     uint8_t result = 0;
 

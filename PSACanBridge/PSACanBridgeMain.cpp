@@ -328,7 +328,7 @@ void Init2004()
         uint8_t CAN_RX_PIN = BOARD_CAN_2004_RX_PIN;
         uint8_t CAN_TX_PIN = BOARD_CAN_2004_TX_PIN;
 
-        can2004Interface = new CanMessageSenderEsp32Idf(CAN_RX_PIN, CAN_TX_PIN, false, serialPort, CanMessageSenderEsp32Idf::CAN_CONTROLLER_1);
+        can2004Interface = new CanMessageSenderEsp32Idf(CAN_RX_PIN, CAN_TX_PIN, serialPort, CanMessageSenderEsp32Idf::CAN_CONTROLLER_1);
     #else
         uint8_t SPI_INSTANCE = BOARD_SPI_INSTANCE;
         uint8_t SCK_PIN  = BOARD_SCK_PIN;
@@ -350,7 +350,7 @@ void Init2010()
     uint8_t CAN_RX_PIN = BOARD_CAN_RX_PIN;
     uint8_t CAN_TX_PIN = BOARD_CAN_TX_PIN;
 
-    can2010Interface = new CanMessageSenderEsp32Idf(CAN_RX_PIN, CAN_TX_PIN, false, serialPort, CanMessageSenderEsp32Idf::CAN_CONTROLLER_0);
+    can2010Interface = new CanMessageSenderEsp32Idf(CAN_RX_PIN, CAN_TX_PIN, serialPort, CanMessageSenderEsp32Idf::CAN_CONTROLLER_0);
     //canInterface = new CanMessageSenderOnSerial(serialPort);
     can2010Interface->Init();
 }

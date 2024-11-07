@@ -16,7 +16,6 @@ private:
 
     uint16_t _prevCanId;
     unsigned long _prevCanIdTime;
-    bool _enableThrottling;
     esp_err_t _alertInit;
     twai_handle_t _twai;
 
@@ -31,7 +30,7 @@ public:
     static const uint8_t CAN_CONTROLLER_0 = 0;
     static const uint8_t CAN_CONTROLLER_1 = 1;
 
-    CanMessageSenderEsp32Idf(uint8_t rxPin, uint8_t txPin, bool enableThrottling, AbsSer *serialPort, uint8_t handle);
+    CanMessageSenderEsp32Idf(uint8_t rxPin, uint8_t txPin, AbsSer *serialPort, uint8_t handle);
 
     void Init() override;
 
