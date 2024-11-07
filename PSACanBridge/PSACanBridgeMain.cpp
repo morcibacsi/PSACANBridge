@@ -30,6 +30,9 @@
 #ifdef BOARD_TYPE_ESP32_V15
     #include "BoardConfig_ESP32_v15.h"
 #endif
+#ifdef PIO_INI_BOARD_ESP32_C6
+    #include "BoardConfig_ESP32_v16.h"
+#endif
 
 #ifdef USE_BLUETOOTH_SERIAL
     #include <BluetoothSerial.h>
@@ -266,11 +269,14 @@ void CAN2004WriteTaskFunction(void* parameter)
         currentTime = millis();
 
         //serialPort->println("Ignition");
-        //uint8_t data1[] = { 0x0E, 0x00, 0x05, 0x2F, 0x21, 0x80, 0x00, 0xA0 };
-        //uint8_t data2[] = { 0x08, 0x32, 0x00, 0x1F, 0x00, 0x0D, 0x40, 0x01 };
+        //
+        /*
+        uint8_t data1[] = { 0x0E, 0x00, 0x05, 0x2F, 0x21, 0x80, 0x00, 0xA0 };
+        uint8_t data2[] = { 0x08, 0x32, 0x00, 0x1F, 0x00, 0x0D, 0x40, 0x01 };
 
-        //can2004Interface->SendMessage(0x036, 0, 8, data1);
-        //can2004Interface->SendMessage(0x0F6, 0, 8, data2);
+        can2004Interface->SendMessage(0x036, 0, 8, data1);
+        can2004Interface->SendMessage(0x0F6, 0, 8, data2);
+        //*/
 
         vTaskDelay(10 / portTICK_PERIOD_MS);
     }
@@ -318,15 +324,25 @@ void InitSerialPort()
 
 void Init2004()
 {
-    uint8_t SPI_INSTANCE = BOARD_SPI_INSTANCE;
-    uint8_t SCK_PIN  = BOARD_SCK_PIN;
-    uint8_t MISO_PIN = BOARD_MISO_PIN;
-    uint8_t MOSI_PIN = BOARD_MOSI_PIN;
-    uint8_t CS_PIN   = BOARD_CS_PIN;
+    #ifdef PIO_INI_BOARD_ESP32_C6
+        uint8_t CAN_RX_PIN = BOARD_CAN_2004_RX_PIN;
+        uint8_t CAN_TX_PIN = BOARD_CAN_2004_TX_PIN;
 
-    spi2004 = new SPIClass(SPI_INSTANCE);
-    spi2004->begin(SCK_PIN, MISO_PIN, MOSI_PIN, CS_PIN);
-    can2004Interface = new CanMessageSenderMCP2515CoryJ(CS_PIN, CAN_125KBPS, MCP_8MHZ, spi2004, serialPort);
+        can2004Interface = new CanMessageSenderEsp32Idf(CAN_RX_PIN, CAN_TX_PIN, false, serialPort, CanMessageSenderEsp32Idf::CAN_CONTROLLER_1);
+    #else
+        uint8_t SPI_INSTANCE = BOARD_SPI_INSTANCE;
+        uint8_t SCK_PIN  = BOARD_SCK_PIN;
+        uint8_t MISO_PIN = BOARD_MISO_PIN;
+        uint8_t MOSI_PIN = BOARD_MOSI_PIN;
+        uint8_t CS_PIN   = BOARD_CS_PIN;
+
+        spi2004 = new SPIClass(SPI_INSTANCE);
+        spi2004->begin(SCK_PIN, MISO_PIN, MOSI_PIN, CS_PIN);
+
+        can2004Interface = new CanMessageSenderMCP2515CoryJ(CS_PIN, CAN_125KBPS, MCP_8MHZ, spi2004, serialPort);
+    #endif
+
+    can2004Interface->Init();
 }
 
 void Init2010()
@@ -334,7 +350,7 @@ void Init2010()
     uint8_t CAN_RX_PIN = BOARD_CAN_RX_PIN;
     uint8_t CAN_TX_PIN = BOARD_CAN_TX_PIN;
 
-    can2010Interface = new CanMessageSenderEsp32Idf(CAN_RX_PIN, CAN_TX_PIN, false, serialPort);
+    can2010Interface = new CanMessageSenderEsp32Idf(CAN_RX_PIN, CAN_TX_PIN, false, serialPort, CanMessageSenderEsp32Idf::CAN_CONTROLLER_0);
     //canInterface = new CanMessageSenderOnSerial(serialPort);
     can2010Interface->Init();
 }
@@ -385,21 +401,20 @@ void setup()
         }
     #endif
 
-    #if defined(BOARD_TYPE_ESP32) || defined(BOARD_TYPE_ESP32_V15)
-        cpu_config_t CAN2010WriteTaskConfig    = { .cpu_core = 0, .priority = 2, .stack_size = 15000 };
-        cpu_config_t CAN2004ReadDataTaskConfig = { .cpu_core = 1, .priority = 1, .stack_size = 20000 };
-        cpu_config_t CAN2004WriteTaskConfig    = { .cpu_core = 0, .priority = 0, .stack_size = 20000 };
-        cpu_config_t CAN2010ReadTaskConfig     = { .cpu_core = 0, .priority = 1, .stack_size = 10000 };
-        cpu_config_t RunWebPageTaskConfig      = { .cpu_core = 0, .priority = 0, .stack_size = 10000 };
-    #endif
+    cpu_config_t CAN2010WriteTaskConfig    = { .cpu_core = 0, .priority = 2, .stack_size = 15000 };
+    cpu_config_t CAN2004ReadDataTaskConfig = { .cpu_core = 1, .priority = 1, .stack_size = 20000 };
+    cpu_config_t CAN2004WriteTaskConfig    = { .cpu_core = 0, .priority = 0, .stack_size = 20000 };
+    cpu_config_t CAN2010ReadTaskConfig     = { .cpu_core = 0, .priority = 1, .stack_size = 10000 };
+    cpu_config_t RunWebPageTaskConfig      = { .cpu_core = 0, .priority = 0, .stack_size = 10000 };
 
-    #ifdef BOARD_TYPE_ESP32_C3
-        cpu_config_t CAN2010WriteTaskConfig    = { .cpu_core = 0, .priority = 5, .stack_size = 10000 };
-        cpu_config_t CAN2004ReadDataTaskConfig = { .cpu_core = 0, .priority = 4, .stack_size = 10000 };
-        cpu_config_t CAN2004WriteTaskConfig    = { .cpu_core = 0, .priority = 3, .stack_size = 10000 };
-        cpu_config_t CAN2010ReadTaskConfig     = { .cpu_core = 0, .priority = 2, .stack_size = 10000 };
-        cpu_config_t RunWebPageTaskConfig      = { .cpu_core = 0, .priority = 1, .stack_size = 10000 };
-    #endif
+    if (CONFIG_SOC_CPU_CORES_NUM == 1)
+    {
+        CAN2010WriteTaskConfig    = { .cpu_core = 0, .priority = 5, .stack_size = 10000 };
+        CAN2004ReadDataTaskConfig = { .cpu_core = 0, .priority = 4, .stack_size = 10000 };
+        CAN2004WriteTaskConfig    = { .cpu_core = 0, .priority = 3, .stack_size = 10000 };
+        CAN2010ReadTaskConfig     = { .cpu_core = 0, .priority = 2, .stack_size = 10000 };
+        RunWebPageTaskConfig      = { .cpu_core = 0, .priority = 1, .stack_size = 10000 };
+    }
 
     xTaskCreatePinnedToCore(
         CAN2010WriteTaskFunction,         // Function to implement the task
